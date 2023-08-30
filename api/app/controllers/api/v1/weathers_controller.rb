@@ -42,7 +42,7 @@ class Api::V1::WeathersController < ApplicationController
     end.compact
     
     # すでにデータがある場合はそれを返すが、なければ外部APIから取得してDBに保存する
-    if existing_data.present?
+    if existing_data.length == 4
       render json: existing_data, status: :ok
     else
       api_key = ENV['WEATHER_API']
