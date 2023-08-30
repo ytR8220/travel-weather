@@ -38,7 +38,7 @@ UQ - Unique Key<br>
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
-| date_time | datetime | NO | - | - | - | - |
+| date_time | datetime | NO | - | - | - | ◯ |
 | weather | varchar | NO | - | - | - | - |
 | temp | float | NO | - | - | - | - |
 | temp_max | float | NO | - | - | - | - |
