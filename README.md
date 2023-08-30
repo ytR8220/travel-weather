@@ -50,3 +50,17 @@ UQ - Unique Key<br>
 | updated_at | datetime | NO | - | - | - | - |
 
 </details>
+
+<details>
+<summary><h3>ER図</h3></summary>
+
+![ER図](./documents/er.png)
+
+</details>
+
+<details>
+<summary><h3>システム構成図</h3></summary>
+
+![システム構成図](./documents/architecture.png)
+
+</details>
