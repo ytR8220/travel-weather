@@ -21,8 +21,8 @@ class Api::V1::WeathersController < ApplicationController
   def get_whether_data
     city_name = params[:city] || "那覇市"
     city = City.find_by(name: city_name)
-    base_date = params[:date] ? Date.parse(params[:date]) : Date.today
-
+    base_date = params[:date] ? DateTime.parse(params[:date]) : DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00'))
+  
     # 都市と国のデータがない場合は作成する
     unless city
       get_coordinates
@@ -30,7 +30,7 @@ class Api::V1::WeathersController < ApplicationController
       city = City.create(name: city_name, country_id: country.id)
     end
 
-    # すでにデータがある場合はそれを取得(3時間後、6時間後、12時間後のデータがあるかどうかを確認)
+    # すでにデータがある場合はそれを取得(現在、3時間後、6時間後、12時間後)
     dates_to_check = [
       base_date,
       base_date + 3.hours,
@@ -42,8 +42,8 @@ class Api::V1::WeathersController < ApplicationController
     end.compact
     
     # すでにデータがある場合はそれを返すが、なければ外部APIから取得してDBに保存する
-    if existing_data
-      render json: existing_data
+    if existing_data.present?
+      render json: existing_data, status: :ok
     else
       api_key = ENV['WEATHER_API']
       get_coordinates
