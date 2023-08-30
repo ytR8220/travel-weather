@@ -37,8 +37,9 @@ UQ - Unique Key<br>
 【weathers】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
-| city_id | int | NO | PK,FK | - | - | ◯ |
-| date_time_id | int | NO | PK,FK | - | - | ◯ |
+| id | int | NO | PK | - | ◯ | - |
+| city_id | int | NO | FK | - | - | ◯ |
+| date_time_id | int | NO | FK | - | - | ◯ |
 | weather | varchar | NO | - | - | - | - |
 | temp | float | NO | - | - | - | - |
 | temp_max | float | NO | - | - | - | - |
