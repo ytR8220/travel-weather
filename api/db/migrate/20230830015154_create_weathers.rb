@@ -2,7 +2,7 @@ class CreateWeathers < ActiveRecord::Migration[7.0]
   def change
     create_table :weathers do |t|
       t.references :city, null: false, foreign_key: true
-      t.references :to_date_time, null: false, foreign_key: true
+      t.datetime :date_time, null: false
       t.string :weather, null: false
       t.float :temp, null: false
       t.float :temp_max, null: false
@@ -13,6 +13,6 @@ class CreateWeathers < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :weathers, [:city_id, :to_date_time_id], unique: true
+    add_index :weathers, [:city_id, :date_time], unique: true
   end
 end
