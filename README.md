@@ -45,7 +45,7 @@ UQ - Unique Key<br>
 | temp_min | float | NO | - | - | - | - |
 | humidity | int | NO | - | - | - | - |
 | description | varchar | NO | - | - | - | - |
-| alert | text | NO | - | - | - | - |
+| alert | text | YES | - | - | - | - |
 | created_at | datetime | NO | - | - | - | - |
 | updated_at | datetime | NO | - | - | - | - |
 
