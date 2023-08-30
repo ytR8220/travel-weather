@@ -1,0 +1,2 @@
+class ToDateTime < ApplicationRecord
+end
