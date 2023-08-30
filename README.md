@@ -28,7 +28,7 @@ UQ - Unique Key<br>
 | id | int | NO | PK | - | ◯ | - |
 | name | varchar | NO | UQ | - | - | ◯ |
 
-【date_times】
+【to_date_times】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
