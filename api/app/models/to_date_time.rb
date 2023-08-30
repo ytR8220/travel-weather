@@ -1,2 +1,0 @@
-class ToDateTime < ApplicationRecord
-end

@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
+  namespace :api do
+    namespace :v1 do
+      resources :weathers, only: [:index, :show, :create, :destroy]
+      get '/get_coordinates', to: 'weathers#get_coordinates'
+      get '/get_whether_data', to: 'weathers#get_whether_data'
+    end
+  end
 end

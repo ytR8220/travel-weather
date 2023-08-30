@@ -56,3 +56,4 @@ gem 'rubocop-rspec', require: false
 gem 'sentry-rails'
 gem 'sentry-ruby'
 gem 'dotenv-rails'
+gem 'httpclient'
