@@ -28,18 +28,17 @@ UQ - Unique Key<br>
 | id | int | NO | PK | - | ◯ | - |
 | name | varchar | NO | UQ | - | - | ◯ |
 
-【to_date_times】
+<!-- 【to_date_times】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
-| date_time | datetime | NO | - | - | - | - |
+| date_time | datetime | NO | - | - | - | - | -->
 
 【weathers】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
-| city_id | int | NO | FK | - | - | ◯ |
-| date_time_id | int | NO | FK | - | - | ◯ |
+| date_time | datetime | NO | - | - | - | - |
 | weather | varchar | NO | - | - | - | - |
 | temp | float | NO | - | - | - | - |
 | temp_max | float | NO | - | - | - | - |
@@ -47,6 +46,7 @@ UQ - Unique Key<br>
 | humidity | int | NO | - | - | - | - |
 | description | varchar | NO | - | - | - | - |
 | alert | text | YES | - | - | - | - |
+| city_id | int | NO | FK | - | - | ◯ |
 | created_at | datetime | NO | - | - | - | - |
 | updated_at | datetime | NO | - | - | - | - |
 
