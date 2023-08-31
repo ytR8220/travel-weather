@@ -12,6 +12,7 @@ class CreateWeathers < ActiveRecord::Migration[7.0]
       t.integer :humidity, null: false
       t.string :description, null: false
       t.text :alert
+      t.string :icon, null: false
 
       t.timestamps
     end

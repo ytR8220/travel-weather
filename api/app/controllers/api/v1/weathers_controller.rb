@@ -66,7 +66,8 @@ module Api
                 temp_min: parsed_response.dig('daily', 0, 'temp', 'min'),
                 humidity: parsed_response.dig('daily', 0, 'humidity'),
                 description: parsed_response.dig('hourly', hour, 'weather', 0, 'description'),
-                alert: parsed_response.dig('alerts', 0, 'description')
+                alert: parsed_response.dig('alerts', 0, 'description'),
+                icon: parsed_response.dig('hourly', hour, 'weather', 0, 'icon')
               )
 
               if weather_data.save
@@ -92,7 +93,8 @@ module Api
                 temp_min: parsed_response.dig('daily', day, 'temp', 'min'),
                 humidity: parsed_response.dig('daily', day, 'humidity'),
                 description: parsed_response.dig('daily', day, 'weather', 0, 'description'),
-                alert: parsed_response.dig('alerts', 0, 'description')
+                alert: parsed_response.dig('alerts', 0, 'description'),
+                icon: parsed_response.dig('daily', day, 'weather', 0, 'icon')
               )
 
               if weather_data.save
