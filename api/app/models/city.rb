@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class City < ApplicationRecord
   belongs_to :country
   has_many :weathers, dependent: :destroy

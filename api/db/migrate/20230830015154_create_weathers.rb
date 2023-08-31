@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateWeathers < ActiveRecord::Migration[7.0]
   def change
     create_table :weathers do |t|
@@ -13,6 +15,6 @@ class CreateWeathers < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-    add_index :weathers, [:city_id, :date_time], unique: true
+    add_index :weathers, %i[city_id date_time], unique: true
   end
 end
