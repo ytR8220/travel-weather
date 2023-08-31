@@ -57,7 +57,7 @@ module Api
             save_hours.each do |hour|
               date_time = Time.at(parsed_response.dig('hourly', hour, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
 
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
+              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time: date_time)
 
               weather_data.assign_attributes(
                 weather: parsed_response.dig('hourly', hour, 'weather', 0, 'main'),
