@@ -10,6 +10,7 @@ class CreateCities < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+    add_index :cities, :name, unique: true
     add_index :cities, %i[lat lon], unique: true
   end
 end
