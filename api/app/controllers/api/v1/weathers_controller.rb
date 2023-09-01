@@ -18,17 +18,20 @@ module Api
           get_coordinates
 
           return if performed?
+          
+          city = City.find_by(lat: @lat, lon: @lon)
+          unless city
+            country = Country.find_or_create_by(name: @country)
+            if country.errors.any?
+              render json: { error: country.errors.full_messages }, status: :unprocessable_entity
+              return
+            end
 
-          country = Country.find_or_create_by(name: @country)
-          if country.errors.any?
-            render json: { error: country.errors.full_messages }, status: :unprocessable_entity
-            return
-          end
-
-          city = City.create(name: city_name, country_id: country.id)
-          unless city.save
-            render json: { error: city.errors.full_messages }, status: :unprocessable_entity
-            return
+            city = City.create(name: city_name, country_id: country.id, lat: @lat, lon: @lon)
+            unless city.save
+              render json: { error: city.errors.full_messages }, status: :unprocessable_entity
+              return
+            end
           end
         end
 

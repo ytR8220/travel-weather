@@ -13,11 +13,13 @@
 ActiveRecord::Schema[7.0].define(version: 2023_08_30_015154) do
   create_table "cities", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
+    t.string "lat", null: false
+    t.string "lon", null: false
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["country_id"], name: "index_cities_on_country_id"
-    t.index ["name", "country_id"], name: "index_cities_on_name_and_country_id", unique: true
+    t.index ["lat", "lon"], name: "index_cities_on_lat_and_lon", unique: true
   end
 
   create_table "countries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
