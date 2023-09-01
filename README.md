@@ -19,14 +19,16 @@ UQ - Unique Key<br>
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
-| name | varchar | NO | UQ | - | - | ◯ |
-| country_id | int | NO | FK | - | - | ◯ |
+| name | string | NO | UQ | - | - | ◯ |
+| lon | string | NO | - | - | - | ◯ |
+| lat | string | NO | - | - | - | ◯ |
+| country_id | int | NO | FK | - | - | - |
 
 【countries】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
-| name | varchar | NO | UQ | - | - | ◯ |
+| name | string | NO | UQ | - | - | ◯ |
 
 <!-- 【to_date_times】
 | カラム名 | データ型 | NULL | 制約 | 初期値 | AUTO INCREMENT | INDEX |
@@ -39,13 +41,14 @@ UQ - Unique Key<br>
 |----|----|----|----|----|----|----|
 | id | int | NO | PK | - | ◯ | - |
 | date_time | datetime | NO | - | - | - | ◯ |
-| weather | varchar | NO | - | - | - | - |
+| weather | string | NO | - | - | - | - |
 | temp | float | NO | - | - | - | - |
 | temp_max | float | NO | - | - | - | - |
 | temp_min | float | NO | - | - | - | - |
 | humidity | int | NO | - | - | - | - |
-| description | varchar | NO | - | - | - | - |
+| description | string | NO | - | - | - | - |
 | alert | text | YES | - | - | - | - |
+| icon | string | NO | - | - | - | - |
 | city_id | int | NO | FK | - | - | ◯ |
 | created_at | datetime | NO | - | - | - | - |
 | updated_at | datetime | NO | - | - | - | - |
