@@ -6,6 +6,7 @@ module Api
       require 'httpclient'
       require 'uri'
       before_action :set_api_key
+      before_action :get_coordinates
 
       # 天気情報を取得する
       def get_weather_data
@@ -15,7 +16,6 @@ module Api
 
         # 都市と国のデータがない場合は作成する
         unless city
-          get_coordinates
 
           return if performed?
           
@@ -43,7 +43,6 @@ module Api
 
         # すでにデータがある場合はそれを返すが、なければ外部APIから取得してDBに保存する
         if existing_dates_data.length < 4 || existing_days_data.length < 5
-          get_coordinates
 
           # APIを叩いてデータを取得
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
@@ -87,7 +86,7 @@ module Api
             save_days.each do |day|
               date_time = Time.at(parsed_response.dig('daily', day, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
 
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
+              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time: date_time)
 
               weather_data.assign_attributes(
                 weather: parsed_response.dig('daily', day, 'weather', 0, 'main'),
@@ -165,19 +164,19 @@ module Api
           base_date + 6.hours,
           base_date + 12.hours
         ]
-        Weather.where(city_id: city_id, date_time: dates_to_check)
+        Weather.where(city_id: city_id).with_dates(dates_to_check).distinct
       end
 
       # すでにデータがある場合はそれを取得する関数（明日から5日後までのデータ）
       def fetch_existing_days_data(city_id, base_date)
         days_to_check = [
-          base_date.tomorrow.midday,
-          base_date.tomorrow.midday + 1.day,
-          base_date.tomorrow.midday + 2.days,
-          base_date.tomorrow.midday + 3.days,
-          base_date.tomorrow.midday + 4.days
+          base_date + 1.day,
+          base_date + 2.days,
+          base_date + 3.days,
+          base_date + 4.days,
+          base_date + 5.days
         ]
-        Weather.where(city_id: city_id, date_time: days_to_check)
+        Weather.where(city_id: city_id).with_dates(days_to_check).distinct
       end
     end
   end
