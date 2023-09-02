@@ -8,7 +8,7 @@ module Api
 
       # 天気情報を取得する関数
       def get_weather_data
-        city_name = params[:city] || '那覇市'
+        city_name = params[:city]
         city = City.find_by(name: city_name)
         base_date = DateTime.parse(params[:date] || Time.now.strftime('%Y-%m-%d %H:00:00'))
 
@@ -66,7 +66,7 @@ module Api
 
       # 経度緯度を取得する関数
       def get_coordinates
-        city = params[:city] || '那覇市'
+        city = params[:city]
         encode_city = URI.encode_www_form_component(city)
         url = "http://api.openweathermap.org/geo/1.0/direct?q=#{encode_city},&appid=#{@api_key}"
         client = HTTPClient.new
