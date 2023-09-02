@@ -19,6 +19,8 @@ jobs:
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-
+      - name: Change to rails_directory
+        run: cd api
       - name: Install dependencies
         run: |
           gem install bundler
