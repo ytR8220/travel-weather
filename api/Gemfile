@@ -54,11 +54,11 @@ end
 
 gem 'dotenv-rails'
 gem 'httpclient'
+gem 'rspec-rails'
 gem 'rubocop', require: false
 gem 'rubocop-rails', require: false
 gem 'rubocop-rspec', require: false
-gem 'rspec-rails'
-gem 'vcr'
-gem 'webmock'
 gem 'sentry-rails'
 gem 'sentry-ruby'
+gem 'vcr'
+gem 'webmock'

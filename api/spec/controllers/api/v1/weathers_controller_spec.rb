@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Api::V1::WeathersController, type: :controller do
@@ -6,7 +8,7 @@ RSpec.describe Api::V1::WeathersController, type: :controller do
     let(:base_date) { Time.now.strftime('%Y-%m-%d %H:00:00') }
 
     before do
-      VCR.use_cassette('weather_data/#{city_name}/#{base_date}') do
+      VCR.use_cassette("weather_data/#{city_name}/#{base_date}") do
         get :get_weather_data, params: { city: city_name, date: base_date }
       end
     end
