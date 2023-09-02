@@ -5,10 +5,10 @@ require 'rails_helper'
 RSpec.describe Api::V1::WeathersController, type: :controller do
   describe '#get_weather_data' do
     let(:city_name) { 'naha' }
-    let(:base_date) { Time.now.strftime('%Y-%m-%d %H:00:00') }
+    let(:base_date) { DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00')) }
 
     before do
-      VCR.use_cassette("weather_data/#{city_name}/#{base_date}") do
+      VCR.use_cassette("weather_data/#{city_name}") do
         get :get_weather_data, params: { city: city_name, date: base_date }
       end
     end

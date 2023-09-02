@@ -29,10 +29,10 @@ module Api
           end
         end
 
-        existing_dates_data = fetch_existing_dates_data(city.id, base_date, :hourly)
+        existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
         existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
 
-        if existing_dates_data.length < 4 || existing_days_data.length < 5
+        if existing_times_data.length < 4 || existing_days_data.length < 5
 
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           client = HTTPClient.new
@@ -42,19 +42,19 @@ module Api
           success = true
           saved_data = []
 
-          success = save_weather_data(parsed_response, [0, 3, 6, 12], :hourly, city.id, saved_data) if existing_dates_data.length < 4
+          success = save_weather_data(parsed_response, [0, 3, 6, 12], :hourly, city.id, saved_data) if existing_times_data.length < 4
 
           success = save_weather_data(parsed_response, [1, 2, 3, 4, 5], :daily, city.id, saved_data) if existing_days_data.length < 5
 
           if success
-            updated_existing_dates_data = fetch_existing_dates_data(city.id, base_date, :hourly)
+            updated_existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
             updated_existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
-            render json: updated_existing_dates_data + updated_existing_days_data, status: :created
+            render json: updated_existing_times_data + updated_existing_days_data, status: :created
           else
             render json: weather_data.errors, status: :unprocessable_entity
           end
         else
-          render json: existing_dates_data + existing_days_data, status: :ok
+          render json: existing_times_data + existing_days_data, status: :ok
         end
       end
 
@@ -95,14 +95,17 @@ module Api
       end
 
       # すでにデータがある場合はそれを取得する関数（現在、3時間後、6時間後、12時間後のデータ）
-      def fetch_existing_dates_data(city_id, base_date, data_type)
-        dates_to_check = [
+      def fetch_existing_times_data(city_id, base_date, data_type)
+        times_to_check = [
           base_date,
           base_date + 3.hours,
           base_date + 6.hours,
           base_date + 12.hours
         ]
-        Weather.where(city_id:, data_type:).with_dates(dates_to_check).distinct
+        result = times_to_check.map do |time|
+          Weather.where(city_id:, date_time: time.strftime('%Y-%m-%d %H:00:00'), data_type:).distinct
+        end
+        result.flatten
       end
 
       # すでにデータがある場合はそれを取得する関数（明日から5日後までのデータ）
