@@ -2,23 +2,23 @@
 
 module Api
   module V1
+    # 天気情報を取得するコントローラー
     class WeathersController < ApplicationController
       require 'httpclient'
       require 'uri'
       before_action :set_api_key
       before_action :get_coordinates
 
-      # 天気情報を取得する
+      # 天気情報を取得する関数
       def get_weather_data
         city_name = params[:city]
         city = City.find_by(name: city_name)
         base_date = DateTime.parse(params[:date] || Time.now.strftime('%Y-%m-%d %H:00:00'))
 
-        # 都市と国のデータがない場合は作成する
         unless city
 
           return if performed?
-          
+
           city = City.find_by(lat: @lat, lon: @lon)
           unless city
             country = Country.find_or_create_by(name: @country)
@@ -35,16 +35,11 @@ module Api
           end
         end
 
-        # すでにデータがある場合はそれを取得(現在、3時間後、6時間後、12時間後のデータ)
         existing_dates_data = fetch_existing_dates_data(city.id, base_date)
-
-        # すでにデータがある場合はそれを取得(明日から5日後までのデータ)
         existing_days_data = fetch_existing_days_data(city.id, base_date)
 
-        # すでにデータがある場合はそれを返すが、なければ外部APIから取得してDBに保存する
         if existing_dates_data.length < 4 || existing_days_data.length < 5
 
-          # APIを叩いてデータを取得
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           client = HTTPClient.new
           response = client.get(url)
@@ -53,13 +48,12 @@ module Api
           success = true
           saved_data = []
 
-          # 現在、3時間後、6時間後、12時間後のデータを取得
           if existing_dates_data.length < 4
             save_hours = [0, 3, 6, 12]
             save_hours.each do |hour|
               date_time = Time.at(parsed_response.dig('hourly', hour, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
 
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time: date_time)
+              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
 
               weather_data.assign_attributes(
                 weather: parsed_response.dig('hourly', hour, 'weather', 0, 'main'),
@@ -80,13 +74,12 @@ module Api
             end
           end
 
-          # 明日から5日後までのデータを取得
           if existing_days_data.length < 5
             save_days = [1, 2, 3, 4, 5]
             save_days.each do |day|
               date_time = Time.at(parsed_response.dig('daily', day, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
 
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time: date_time)
+              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
 
               weather_data.assign_attributes(
                 weather: parsed_response.dig('daily', day, 'weather', 0, 'main'),
@@ -121,7 +114,6 @@ module Api
 
       private
 
-      # APIキーをセットする
       def set_api_key
         @api_key = ENV['WEATHER_API']
       end
@@ -164,7 +156,7 @@ module Api
           base_date + 6.hours,
           base_date + 12.hours
         ]
-        Weather.where(city_id: city_id).with_dates(dates_to_check).distinct
+        Weather.where(city_id:).with_dates(dates_to_check).distinct
       end
 
       # すでにデータがある場合はそれを取得する関数（明日から5日後までのデータ）
@@ -176,7 +168,7 @@ module Api
           base_date + 4.days,
           base_date + 5.days
         ]
-        Weather.where(city_id: city_id).with_dates(days_to_check).distinct
+        Weather.where(city_id:).with_dates(days_to_check).distinct
       end
     end
   end

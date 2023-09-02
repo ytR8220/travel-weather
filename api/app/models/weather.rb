@@ -3,8 +3,8 @@
 class Weather < ApplicationRecord
   belongs_to :city
 
-  scope :with_dates, ->(dates) {
-    where("DATE(date_time) IN (?)", dates.map(&:to_date))
+  scope :with_dates, lambda { |dates|
+    where('DATE(date_time) IN (?)', dates.map(&:to_date))
   }
 
   validates :city_id, presence: true
