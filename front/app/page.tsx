@@ -112,7 +112,7 @@ export default function Home() {
       >
         <div
           className={
-            'container xl max-w-7xl min-h-2/4 rounded-xl backdrop-blur-md bg-white/40 p-10'
+            'container xl max-w-7xl rounded-xl backdrop-blur-md bg-white/40 px-10 py-20'
           }
         >
           <h1
@@ -182,74 +182,78 @@ export default function Home() {
               </ul>
             </div>
           )}
-          <div className={'w-7/12 min-w-fit mt-14 mx-auto'}>
-            <ul className={'flex justify-between gap-4'}>
-              {timeWeather.map((weather: any, index: number) => (
-                <li key={index} className={'flex flex-col items-center'}>
-                  <p className={'text-gray-800'}>{timeIndex(index)}</p>
-                  <div
-                    className={
-                      'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-6'
-                    }
-                  >
-                    <p>{weather.description}</p>
-                    <Image
-                      src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                      alt={'sunny'}
-                      width={100}
-                      height={100}
-                    />
-                    <p>
-                      <span className={'text-red-600'}>
-                        {Math.round(weather.temp_max)}℃
-                      </span>
-                      ／
-                      <span className={'text-blue-600'}>
-                        {Math.round(weather.temp_min)}℃
-                      </span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className={'mt-2 text-right text-gray-600'}>
-              {timeUpdatedAt && `最終更新時間：${timeUpdatedAt}`}
-            </p>
-          </div>
-          <div className={'w-7/12 min-w-fit mt-10 mx-auto'}>
-            <ul className={'flex justify-between gap-1'}>
-              {dayWeather.map((weather: any, index: number) => (
-                <li key={index} className={'flex flex-col items-center'}>
-                  <p className={'text-gray-800'}>{dayIndex()}</p>
-                  <div
-                    className={
-                      'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-4'
-                    }
-                  >
-                    <p>{weather.description}</p>
-                    <Image
-                      src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                      alt={'sunny'}
-                      width={60}
-                      height={60}
-                    />
-                    <p>
-                      <span className={'text-red-600'}>
-                        {Math.round(weather.temp_max)}℃
-                      </span>
-                      ／
-                      <span className={'text-blue-600'}>
-                        {Math.round(weather.temp_min)}℃
-                      </span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className={'mt-2 text-right text-gray-600'}>
-              {dayUpdatedAt && `最終更新時間：${dayUpdatedAt}`}
-            </p>
-          </div>
+          {data?.[0] && (
+            <>
+              <div className={'w-7/12 min-w-fit mt-14 mx-auto'}>
+                <ul className={'flex justify-between gap-4'}>
+                  {timeWeather.map((weather: any, index: number) => (
+                    <li key={index} className={'flex flex-col items-center'}>
+                      <p className={'text-gray-800'}>{timeIndex(index)}</p>
+                      <div
+                        className={
+                          'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-6'
+                        }
+                      >
+                        <p>{weather.description}</p>
+                        <Image
+                          src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+                          alt={'sunny'}
+                          width={100}
+                          height={100}
+                        />
+                        <p>
+                          <span className={'text-red-600'}>
+                            {Math.round(weather.temp_max)}℃
+                          </span>
+                          ／
+                          <span className={'text-blue-600'}>
+                            {Math.round(weather.temp_min)}℃
+                          </span>
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className={'mt-2 text-right text-gray-600'}>
+                  {timeUpdatedAt && `最終更新時間：${timeUpdatedAt}`}
+                </p>
+              </div>
+              <div className={'w-7/12 min-w-fit mt-10 mx-auto'}>
+                <ul className={'flex justify-between gap-1'}>
+                  {dayWeather.map((weather: any, index: number) => (
+                    <li key={index} className={'flex flex-col items-center'}>
+                      <p className={'text-gray-800'}>{dayIndex()}</p>
+                      <div
+                        className={
+                          'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-4'
+                        }
+                      >
+                        <p>{weather.description}</p>
+                        <Image
+                          src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+                          alt={'sunny'}
+                          width={60}
+                          height={60}
+                        />
+                        <p>
+                          <span className={'text-red-600'}>
+                            {Math.round(weather.temp_max)}℃
+                          </span>
+                          ／
+                          <span className={'text-blue-600'}>
+                            {Math.round(weather.temp_min)}℃
+                          </span>
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <p className={'mt-2 text-right text-gray-600'}>
+                  {dayUpdatedAt && `最終更新時間：${dayUpdatedAt}`}
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
