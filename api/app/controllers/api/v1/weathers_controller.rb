@@ -4,21 +4,15 @@ module Api
   module V1
     # 天気情報を取得するコントローラー
     class WeathersController < ApplicationController
-      require 'httpclient'
-      require 'uri'
-      before_action :set_api_key
-      before_action :get_coordinates
+      before_action :set_api_key, :get_coordinates
 
       # 天気情報を取得する関数
       def get_weather_data
-        city_name = params[:city]
+        city_name = params[:city] || '那覇市'
         city = City.find_by(name: city_name)
         base_date = DateTime.parse(params[:date] || Time.now.strftime('%Y-%m-%d %H:00:00'))
 
         unless city
-
-          return if performed?
-
           city = City.find_by(lat: @lat, lon: @lon)
           unless city
             country = Country.find_or_create_by(name: @country)
@@ -35,8 +29,8 @@ module Api
           end
         end
 
-        existing_dates_data = fetch_existing_dates_data(city.id, base_date)
-        existing_days_data = fetch_existing_days_data(city.id, base_date)
+        existing_dates_data = fetch_existing_dates_data(city.id, base_date, :hourly)
+        existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
 
         if existing_dates_data.length < 4 || existing_days_data.length < 5
 
@@ -48,61 +42,13 @@ module Api
           success = true
           saved_data = []
 
-          if existing_dates_data.length < 4
-            save_hours = [0, 3, 6, 12]
-            save_hours.each do |hour|
-              date_time = Time.at(parsed_response.dig('hourly', hour, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
+          success = save_weather_data(parsed_response, [0, 3, 6, 12], :hourly, city.id, saved_data) if existing_dates_data.length < 4
 
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
-
-              weather_data.assign_attributes(
-                weather: parsed_response.dig('hourly', hour, 'weather', 0, 'main'),
-                temp: parsed_response.dig('hourly', hour, 'temp'),
-                temp_max: parsed_response.dig('daily', 0, 'temp', 'max'),
-                temp_min: parsed_response.dig('daily', 0, 'temp', 'min'),
-                humidity: parsed_response.dig('daily', 0, 'humidity'),
-                description: parsed_response.dig('hourly', hour, 'weather', 0, 'description'),
-                alert: parsed_response.dig('alerts', 0, 'description'),
-                icon: parsed_response.dig('hourly', hour, 'weather', 0, 'icon')
-              )
-
-              if weather_data.save
-                saved_data << weather_data
-              else
-                success = false
-              end
-            end
-          end
-
-          if existing_days_data.length < 5
-            save_days = [1, 2, 3, 4, 5]
-            save_days.each do |day|
-              date_time = Time.at(parsed_response.dig('daily', day, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
-
-              weather_data = Weather.find_or_initialize_by(city_id: city.id, date_time:)
-
-              weather_data.assign_attributes(
-                weather: parsed_response.dig('daily', day, 'weather', 0, 'main'),
-                temp: parsed_response.dig('daily', day, 'temp', 'day'),
-                temp_max: parsed_response.dig('daily', day, 'temp', 'max'),
-                temp_min: parsed_response.dig('daily', day, 'temp', 'min'),
-                humidity: parsed_response.dig('daily', day, 'humidity'),
-                description: parsed_response.dig('daily', day, 'weather', 0, 'description'),
-                alert: parsed_response.dig('alerts', 0, 'description'),
-                icon: parsed_response.dig('daily', day, 'weather', 0, 'icon')
-              )
-
-              if weather_data.save
-                saved_data << weather_data
-              else
-                success = false
-              end
-            end
-          end
+          success = save_weather_data(parsed_response, [1, 2, 3, 4, 5], :daily, city.id, saved_data) if existing_days_data.length < 5
 
           if success
-            updated_existing_dates_data = fetch_existing_dates_data(city.id, base_date)
-            updated_existing_days_data = fetch_existing_days_data(city.id, base_date)
+            updated_existing_dates_data = fetch_existing_dates_data(city.id, base_date, :hourly)
+            updated_existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
             render json: updated_existing_dates_data + updated_existing_days_data, status: :created
           else
             render json: weather_data.errors, status: :unprocessable_entity
@@ -120,7 +66,7 @@ module Api
 
       # 経度緯度を取得する関数
       def get_coordinates
-        city = params[:city]
+        city = params[:city] || '那覇市'
         encode_city = URI.encode_www_form_component(city)
         url = "http://api.openweathermap.org/geo/1.0/direct?q=#{encode_city},&appid=#{@api_key}"
         client = HTTPClient.new
@@ -149,18 +95,18 @@ module Api
       end
 
       # すでにデータがある場合はそれを取得する関数（現在、3時間後、6時間後、12時間後のデータ）
-      def fetch_existing_dates_data(city_id, base_date)
+      def fetch_existing_dates_data(city_id, base_date, data_type)
         dates_to_check = [
           base_date,
           base_date + 3.hours,
           base_date + 6.hours,
           base_date + 12.hours
         ]
-        Weather.where(city_id:).with_dates(dates_to_check).distinct
+        Weather.where(city_id:, data_type:).with_dates(dates_to_check).distinct
       end
 
       # すでにデータがある場合はそれを取得する関数（明日から5日後までのデータ）
-      def fetch_existing_days_data(city_id, base_date)
+      def fetch_existing_days_data(city_id, base_date, data_type)
         days_to_check = [
           base_date + 1.day,
           base_date + 2.days,
@@ -168,7 +114,49 @@ module Api
           base_date + 4.days,
           base_date + 5.days
         ]
-        Weather.where(city_id:).with_dates(days_to_check).distinct
+        Weather.where(city_id:, data_type:).with_dates(days_to_check).distinct
+      end
+
+      # 天気情報を保存する関数
+      def save_weather_data(parsed_response, times, type, city_id, saved_data)
+        times.each do |time|
+          if type == :hourly
+            date_time = Time.at(parsed_response.dig('hourly', time, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
+            weather_data = Weather.find_or_initialize_by(city_id:, date_time:, data_type: type)
+            attributes = {
+              weather: parsed_response.dig('hourly', time, 'weather', 0, 'main'),
+              temp: parsed_response.dig('hourly', time, 'temp'),
+              temp_max: parsed_response.dig('daily', 0, 'temp', 'max'),
+              temp_min: parsed_response.dig('daily', 0, 'temp', 'min'),
+              humidity: parsed_response.dig('daily', 0, 'humidity'),
+              description: parsed_response.dig('hourly', time, 'weather', 0, 'description'),
+              alert: parsed_response.dig('alerts', 0, 'description'),
+              icon: parsed_response.dig('hourly', time, 'weather', 0, 'icon'),
+              data_type: type
+            }
+          elsif type == :daily
+            date_time = Time.at(parsed_response.dig('daily', time, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
+            weather_data = Weather.find_or_initialize_by(city_id:, date_time:, data_type: type)
+            attributes = {
+              weather: parsed_response.dig('daily', time, 'weather', 0, 'main'),
+              temp: parsed_response.dig('daily', time, 'temp', 'day'),
+              temp_max: parsed_response.dig('daily', time, 'temp', 'max'),
+              temp_min: parsed_response.dig('daily', time, 'temp', 'min'),
+              humidity: parsed_response.dig('daily', time, 'humidity'),
+              description: parsed_response.dig('daily', time, 'weather', 0, 'description'),
+              alert: parsed_response.dig('alerts', 0, 'description'),
+              icon: parsed_response.dig('daily', time, 'weather', 0, 'icon'),
+              data_type: type
+            }
+          end
+
+          weather_data.assign_attributes(attributes)
+
+          return false unless weather_data.save
+
+          saved_data << weather_data
+        end
+        true
       end
     end
   end

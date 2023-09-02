@@ -14,4 +14,6 @@ class Weather < ApplicationRecord
   validates :temp_min, presence: true
   validates :humidity, presence: true
   validates :description, presence: true
+  validates :icon, presence: true
+  validates :data_type, presence: true
 end

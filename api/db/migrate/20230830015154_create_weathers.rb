@@ -13,9 +13,10 @@ class CreateWeathers < ActiveRecord::Migration[7.0]
       t.string :description, null: false
       t.text :alert
       t.string :icon, null: false
+      t.string :data_type, null: false
 
       t.timestamps
     end
-    add_index :weathers, %i[city_id date_time], unique: true
+    add_index :weathers, %i[city_id date_time data_type], unique: true
   end
 end
