@@ -11,11 +11,11 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2023_08_30_015154) do
-  create_table "cities", force: :cascade do |t|
+  create_table "cities", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "lat", null: false
     t.string "lon", null: false
-    t.integer "country_id", null: false
+    t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["country_id"], name: "index_cities_on_country_id"
@@ -23,15 +23,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_30_015154) do
     t.index ["name"], name: "index_cities_on_name", unique: true
   end
 
-  create_table "countries", force: :cascade do |t|
+  create_table "countries", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_countries_on_name", unique: true
   end
 
-  create_table "weathers", force: :cascade do |t|
-    t.integer "city_id", null: false
+  create_table "weathers", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "city_id", null: false
     t.datetime "date_time", null: false
     t.string "weather", null: false
     t.float "temp", null: false
