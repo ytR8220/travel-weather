@@ -1,9 +1,9 @@
 'use client';
 
-import CityInput from '@/components/CityInput';
-import GetBtn from '@/components/GetBtn';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import CityInput from '@/components/cityinput';
+import GetBtn from '@/components/getbtn';
 import DisplayTimesWeather from '@/components/DisplayTimesWeather';
 import DisplayDaysWeather from '@/components/DisplayDaysWeather';
 
