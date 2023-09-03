@@ -46,8 +46,6 @@ module Api
 
           success = save_weather_data(parsed_response, [1, 2, 3, 4, 5], :daily, city.id, saved_data) if existing_days_data.length < 5
 
-          
-
           if success
             updated_existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
             updated_existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
