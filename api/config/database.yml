@@ -11,8 +11,6 @@ default: &default
   collation: utf8mb4_general_ci
   pool: 5
   username: root
-  username: <%= Rails.application.credentials.db[:password] %>
-  host: <%= Rails.application.credentials.db[:hostname] %>
 
 development:
   <<: *default
@@ -35,6 +33,3 @@ test:
 production:
   <<: *default
   database: weather_api_production
-  username: root
-  password: <%= Rails.application.credentials.db[:password] %>
-  host: <%= Rails.application.credentials.db[:hostname] %>
