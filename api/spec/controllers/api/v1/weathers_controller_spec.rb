@@ -9,7 +9,7 @@ RSpec.describe Api::V1::WeathersController, type: :controller do
     let(:cassette_name) { "weather_data/#{city_name}_#{Time.now.strftime('%Y-%m-%d %H:00:00')}" }
 
     before do
-      VCR.use_cassette(cassette_name, :record => :all) do
+      VCR.use_cassette(cassette_name, :record => :once) do
         get :get_weather_data, params: { city: city_name, date: base_date }
       end
     end
