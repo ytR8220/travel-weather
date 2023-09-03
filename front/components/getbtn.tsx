@@ -3,6 +3,7 @@ type props = {
   disabled: boolean;
 };
 
+// 天気を取得するボタン
 const GetBtn: React.FC<props> = ({ onClick, disabled }) => {
   return (
     <button

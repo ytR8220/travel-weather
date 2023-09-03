@@ -4,6 +4,7 @@ type props = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+// 都市名を入力するinput
 const CityInput: React.FC<props> = ({ name, value, onChange }) => {
   return (
     <input
