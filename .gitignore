@@ -2,4 +2,4 @@
 tmp/cache
 log
 vcr
-databese.yml
+database.yml
