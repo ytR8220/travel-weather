@@ -82,10 +82,10 @@ export default function Home() {
 
   const formatDay = (timeStamp: string) => {
     const date = new Date(timeStamp);
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth() + 1;
-    const day = date.getUTCDate();
-    const dayOfWeek = date.getUTCDay();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dayOfWeek = date.getDay();
     const dayOfWeekStr = ['日', '月', '火', '水', '木', '金', '土'][dayOfWeek];
     return { year, month, day, dayOfWeekStr };
   };
@@ -98,7 +98,7 @@ export default function Home() {
 
   const formatTime = (timeStamp: string) => {
     const date = new Date(timeStamp);
-    const hour = date.getUTCHours();
+    const hour = date.getHours();
     return `${hour}時`;
   };
 
