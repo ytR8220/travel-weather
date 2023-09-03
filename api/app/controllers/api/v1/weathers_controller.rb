@@ -10,7 +10,7 @@ module Api
       def get_weather_data
         city_name = params[:city]
         city = City.find_by(name: city_name)
-        base_date = DateTime.parse(params[:date] || Time.now.strftime('%Y-%m-%d %H:00:00'))
+        base_date = DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00'))
 
         unless city
           city = City.find_by(lat: @lat, lon: @lon)
@@ -32,8 +32,9 @@ module Api
         existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
         existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
 
+        should_update_data = existing_days_data.any? && (Time.now.utc - existing_days_data[0].updated_at) / 3600 > 12
 
-        if existing_times_data.length < 4 || existing_days_data.length < 5
+        if should_update_data || existing_times_data.length < 4 || existing_days_data.length < 5
 
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           client = HTTPClient.new
@@ -45,7 +46,7 @@ module Api
 
           success = save_weather_data(parsed_response, [0, 3, 6, 12], :hourly, city.id, saved_data) if existing_times_data.length < 4
 
-          success = save_weather_data(parsed_response, [1, 2, 3, 4, 5], :daily, city.id, saved_data) if existing_days_data.length < 5
+          success = save_weather_data(parsed_response, [1, 2, 3, 4, 5], :daily, city.id, saved_data) if existing_days_data.length < 5 || should_update_data
 
           if success
             updated_existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
