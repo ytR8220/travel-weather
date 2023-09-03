@@ -32,6 +32,7 @@ module Api
         existing_times_data = fetch_existing_times_data(city.id, base_date, :hourly)
         existing_days_data = fetch_existing_days_data(city.id, base_date, :daily)
 
+
         if existing_times_data.length < 4 || existing_days_data.length < 5
 
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
@@ -102,10 +103,7 @@ module Api
           base_date + 6.hours,
           base_date + 12.hours
         ]
-        result = times_to_check.map do |time|
-          Weather.where(city_id:, date_time: time.strftime('%Y-%m-%d %H:00:00'), data_type:).distinct
-        end
-        result.flatten
+        Weather.where(city_id:, date_time: times_to_check, data_type:).distinct
       end
 
       # すでにデータがある場合はそれを取得する関数（明日から5日後までのデータ）
