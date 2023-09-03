@@ -7,23 +7,23 @@ type props = {
     temp_max: number;
     temp_min: number;
   };
-  iconSize: number;
-  px: string;
 };
 
-const DisplayWeather: React.FC<props> = ({ weatherData, iconSize, px }) => {
+const DisplayDaysWeather: React.FC<props> = ({ weatherData }) => {
   return (
     <div
-      className={`flex flex-col items-center rounded-lg backdrop-blur-sm py-4 ${px}`}
+      className={
+        'flex flex-col items-center rounded-lg bg-gray-200/10 backdrop-blur-sm drop-shadow-md py-4 px-4 max-md:py-2 max-md:px-4 max-md:w-28'
+      }
     >
       <p>{weatherData.description}</p>
       <Image
         src={`https://openweathermap.org/img/wn/${weatherData.icon}@2x.png`}
         alt={'sunny'}
-        width={iconSize}
-        height={iconSize}
+        width={60}
+        height={60}
       />
-      <p>
+      <p className={'max-md:text-sm'}>
         <span className={'text-red-600'}>
           {Math.round(weatherData.temp_max)}℃
         </span>
@@ -36,4 +36,4 @@ const DisplayWeather: React.FC<props> = ({ weatherData, iconSize, px }) => {
   );
 };
 
-export default DisplayWeather;
+export default DisplayDaysWeather;

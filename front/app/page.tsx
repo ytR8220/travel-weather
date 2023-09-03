@@ -1,11 +1,11 @@
 'use client';
 
-import CityInput from '@/components/cityinput';
-import GetBtn from '@/components/getbtn';
-import Image from 'next/image';
+import CityInput from '@/components/CityInput';
+import GetBtn from '@/components/GetBtn';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import DisplayWeather from '@/components/displayWeather';
+import DisplayTimesWeather from '@/components/DisplayTimesWeather';
+import DisplayDaysWeather from '@/components/DisplayDaysWeather';
 
 type data = {
   id: number;
@@ -104,47 +104,62 @@ export default function Home() {
     return `${result.month}/${result.day}(${result.dayOfWeekStr})`;
   };
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    getWeather();
+  };
+
   return (
     <div
       className={"bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat"}
       style={{ backgroundPositionY: '40%' }}
     >
       <div
-        className={'p-10 min-h-screen h-full flex justify-center items-center'}
+        className={
+          'p-10 min-h-screen h-full flex justify-center items-center max-md:p-5'
+        }
       >
         <div
           className={
-            'container xl max-w-7xl rounded-xl backdrop-blur-md bg-white/40 px-10 py-20'
+            'container xl max-w-7xl rounded-xl bg-white/40 backdrop-blur-md px-5 py-20 max-md:py-10'
           }
         >
           <h1
             className={
-              'font-serif text-5xl text-center font-bold text-gray-900'
+              'font-serif text-5xl text-center font-bold text-gray-900 max-md:text-3xl'
             }
           >
             Travel Weather
           </h1>
-          <div
-            className={
-              'w-6/12 max-lg:w-full min-w-fit mx-auto mt-7 flex justify-center gap-5'
-            }
-          >
-            <div className={'w-3/4'}>
-              <CityInput
-                name={'city'}
-                value={inputCity}
-                onChange={handleChange}
-              />
-              <p className={getError ? 'block text-red-600' : 'hidden'}>
-                入力された市区町村名が正しくないようです。
-              </p>
+          <form className={'w-full'} onSubmit={handleFormSubmit}>
+            <div
+              className={
+                'w-6/12 max-lg:w-full min-w-fit mx-auto mt-7 flex justify-center gap-5'
+              }
+            >
+              <div className={'w-3/4 max-md:w-full'}>
+                <CityInput
+                  name={'city'}
+                  value={inputCity}
+                  onChange={handleChange}
+                />
+                <p className={getError ? 'block text-red-600' : 'hidden'}>
+                  入力された市区町村名が正しくないようです。
+                </p>
+              </div>
+              <GetBtn onClick={getWeather} disabled={disabled} />
             </div>
-            <GetBtn onClick={getWeather} disabled={disabled} />
-          </div>
+          </form>
           {data?.[0] && (
             <div className={'w-7/12 min-w-fit mt-7 mx-auto'}>
-              <p className={'text-3xl font-bold text-gray-700 text-center'}>
-                <span>{formatToday()}</span>の<span>{currentCity}</span>の天気
+              <p
+                className={
+                  'text-3xl font-bold text-gray-700 text-center max-md:text-lg'
+                }
+              >
+                {formatToday()}
+                <span>の</span>
+                {currentCity}の天気
               </p>
               {data?.[0].alert && (
                 <p className={'mt-7 text-xl'}>
@@ -152,75 +167,95 @@ export default function Home() {
                   <span className={'text-gray-800'}></span>
                 </p>
               )}
-              <ul className={'mt-3 flex justify-between text-xl gap-x-8'}>
-                <li>
+              <ul
+                className={
+                  'mt-5 flex justify-between text-xl gap-x-8 max-md:gap-x-2'
+                }
+              >
+                <li
+                  className={
+                    'max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                  }
+                >
                   気温
-                  <span className={'ml-5'}>
-                    {data?.[0] && Math.round(data[0].temp)}
+                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                    {data?.[0] && Math.round(data[0].temp)}℃
                   </span>
-                  ℃
                 </li>
-                <li className={'text-red-600'}>
+                <li
+                  className={
+                    'text-red-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                  }
+                >
                   最高気温
-                  <span className={'ml-5'}>
-                    {data?.[0] && Math.round(data[0].temp_max)}
+                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                    {data?.[0] && Math.round(data[0].temp_max)}℃
                   </span>
-                  ℃
                 </li>
-                <li className={'text-blue-600'}>
+                <li
+                  className={
+                    'text-blue-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                  }
+                >
                   最低気温
-                  <span className={'ml-5'}>
-                    {data?.[0] && Math.round(data[0].temp_min)}
+                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                    {data?.[0] && Math.round(data[0].temp_min)}℃
                   </span>
-                  ℃
                 </li>
-                <li className={'text-orange-600'}>
+                <li
+                  className={
+                    'text-orange-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                  }
+                >
                   湿度
-                  <span className={'ml-5'}>
-                    {data?.[0] && Math.round(data[0].humidity)}
+                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                    {data?.[0] && Math.round(data[0].humidity)}%
                   </span>
-                  %
                 </li>
               </ul>
             </div>
           )}
           {data?.[0] && (
             <>
-              <div className={'w-7/12 min-w-fit mt-14 mx-auto'}>
-                <ul className={'flex justify-between gap-4'}>
-                  {timeWeather.map((weather: any, index: number) => (
-                    <li key={index} className={'flex flex-col items-center'}>
-                      <p className={'text-gray-800'}>
-                        {formatTime(weather.date_time)}
-                      </p>
-                      <DisplayWeather
-                        weatherData={weather}
-                        iconSize={100}
-                        px='px-6'
-                      />
-                    </li>
-                  ))}
-                </ul>
-                <p className={'mt-2 text-right text-gray-600'}>
+              <div
+                className={
+                  'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
+                }
+              >
+                <div className={'max-md:overflow-auto'}>
+                  <ul className={'flex justify-between gap-4'}>
+                    {timeWeather.map((weather: any, index: number) => (
+                      <li key={index} className={'flex flex-col items-center'}>
+                        <p className={'text-gray-800 max-md:text-sm'}>
+                          {formatTime(weather.date_time)}
+                        </p>
+                        <DisplayTimesWeather weatherData={weather} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
                   {timeUpdatedAt && `最終更新時間：${timeUpdatedAt}`}
                 </p>
               </div>
-              <div className={'w-7/12 min-w-fit mt-10 mx-auto'}>
-                <ul className={'flex justify-between gap-1'}>
-                  {dayWeather.map((weather: any, index: number) => (
-                    <li key={index} className={'flex flex-col items-center'}>
-                      <p className={'text-gray-800'}>
-                        {formatDayOfWeek(weather.date_time)}
-                      </p>
-                      <DisplayWeather
-                        weatherData={weather}
-                        iconSize={60}
-                        px='px-4'
-                      />
-                    </li>
-                  ))}
-                </ul>
-                <p className={'mt-2 text-right text-gray-600'}>
+              <div
+                className={
+                  'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
+                }
+              >
+                <div className={'max-md:overflow-auto'}>
+                  <ul className={'flex justify-between gap-1 max-md:gap-x-4'}>
+                    {dayWeather.map((weather: any, index: number) => (
+                      <li key={index} className={'flex flex-col items-center'}>
+                        <p className={'text-gray-800 max-md:text-sm'}>
+                          {formatDayOfWeek(weather.date_time)}
+                        </p>
+                        <DisplayDaysWeather weatherData={weather} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
                   {dayUpdatedAt && `最終更新時間：${dayUpdatedAt}`}
                 </p>
               </div>
