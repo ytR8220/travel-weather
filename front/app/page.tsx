@@ -5,6 +5,7 @@ import GetBtn from '@/components/getbtn';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import DisplayWeather from '@/components/displayWeather';
 
 type data = {
   id: number;
@@ -40,7 +41,6 @@ export default function Home() {
   useEffect(() => {
     if (data?.[0]) {
       const date = new Date(data[0].updated_at);
-      date.setUTCDate(date.getUTCDate() + 9);
       const hour = date.getHours();
       const minute = date.getMinutes();
       setTimeUpdatedAt(`${hour}時${String(minute).padStart(2, '0')}分`);
@@ -50,18 +50,11 @@ export default function Home() {
   useEffect(() => {
     if (data?.[4]) {
       const date = new Date(data[4].updated_at);
-      date.setUTCDate(date.getUTCDate() + 9);
       const hour = date.getHours();
       const minute = date.getMinutes();
       setDayUpdatedAt(`${hour}時${String(minute).padStart(2, '0')}分`);
     }
   }, [data]);
-
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const day = today.getDate();
-  const formattedDate = `${year}年${month}月${day}日`;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGetError(false);
@@ -84,26 +77,31 @@ export default function Home() {
     setInputCity('');
   };
 
-  const timeIndex = (index: number) => {
-    switch (index) {
-      case 0:
-        return '現在';
-      case 1:
-        return '3時間後';
-      case 2:
-        return '6時間後';
-      case 3:
-        return '12時間後';
-    }
-  };
-
   const formatDay = (timeStamp: string) => {
     const date = new Date(timeStamp);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const dayOfWeek = date.getDay();
+    const year = date.getUTCFullYear();
+    const month = date.getUTCMonth() + 1;
+    const day = date.getUTCDate();
+    const dayOfWeek = date.getUTCDay();
     const dayOfWeekStr = ['日', '月', '火', '水', '木', '金', '土'][dayOfWeek];
-    return `${month}/${day}(${dayOfWeekStr})`;
+    return { year, month, day, dayOfWeekStr };
+  };
+
+  const formatToday = () => {
+    const today = new Date().toISOString();
+    const result = formatDay(today);
+    return `${result.year}年${result.month}月${result.day}日(${result.dayOfWeekStr})`;
+  };
+
+  const formatTime = (timeStamp: string) => {
+    const date = new Date(timeStamp);
+    const hour = date.getUTCHours();
+    return `${hour}時`;
+  };
+
+  const formatDayOfWeek = (timeStamp: string) => {
+    const result = formatDay(timeStamp);
+    return `${result.month}/${result.day}(${result.dayOfWeekStr})`;
   };
 
   return (
@@ -146,7 +144,7 @@ export default function Home() {
           {data?.[0] && (
             <div className={'w-7/12 min-w-fit mt-7 mx-auto'}>
               <p className={'text-3xl font-bold text-gray-700 text-center'}>
-                <span>{formattedDate}</span>の<span>{currentCity}</span>の天気
+                <span>{formatToday()}</span>の<span>{currentCity}</span>の天気
               </p>
               {data?.[0].alert && (
                 <p className={'mt-7 text-xl'}>
@@ -192,29 +190,14 @@ export default function Home() {
                 <ul className={'flex justify-between gap-4'}>
                   {timeWeather.map((weather: any, index: number) => (
                     <li key={index} className={'flex flex-col items-center'}>
-                      <p className={'text-gray-800'}>{timeIndex(index)}</p>
-                      <div
-                        className={
-                          'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-6'
-                        }
-                      >
-                        <p>{weather.description}</p>
-                        <Image
-                          src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                          alt={'sunny'}
-                          width={100}
-                          height={100}
-                        />
-                        <p>
-                          <span className={'text-red-600'}>
-                            {Math.round(weather.temp_max)}℃
-                          </span>
-                          ／
-                          <span className={'text-blue-600'}>
-                            {Math.round(weather.temp_min)}℃
-                          </span>
-                        </p>
-                      </div>
+                      <p className={'text-gray-800'}>
+                        {formatTime(weather.date_time)}
+                      </p>
+                      <DisplayWeather
+                        weatherData={weather}
+                        iconSize={100}
+                        px='px-6'
+                      />
                     </li>
                   ))}
                 </ul>
@@ -227,30 +210,13 @@ export default function Home() {
                   {dayWeather.map((weather: any, index: number) => (
                     <li key={index} className={'flex flex-col items-center'}>
                       <p className={'text-gray-800'}>
-                        {formatDay(weather.date_time)}
+                        {formatDayOfWeek(weather.date_time)}
                       </p>
-                      <div
-                        className={
-                          'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-4'
-                        }
-                      >
-                        <p>{weather.description}</p>
-                        <Image
-                          src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
-                          alt={'sunny'}
-                          width={60}
-                          height={60}
-                        />
-                        <p>
-                          <span className={'text-red-600'}>
-                            {Math.round(weather.temp_max)}℃
-                          </span>
-                          ／
-                          <span className={'text-blue-600'}>
-                            {Math.round(weather.temp_min)}℃
-                          </span>
-                        </p>
-                      </div>
+                      <DisplayWeather
+                        weatherData={weather}
+                        iconSize={60}
+                        px='px-4'
+                      />
                     </li>
                   ))}
                 </ul>
