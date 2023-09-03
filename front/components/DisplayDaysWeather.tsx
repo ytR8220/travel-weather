@@ -13,7 +13,7 @@ const DisplayDaysWeather: React.FC<props> = ({ weatherData }) => {
   return (
     <div
       className={
-        'flex flex-col items-center rounded-lg bg-gray-200/10 backdrop-blur-sm drop-shadow-md py-4 px-4 max-md:py-2 max-md:px-4 max-md:w-28'
+        'flex flex-col items-center rounded-lg bg-gray-200/10 backdrop-blur-sm drop-shadow-md py-4 px-4 max-md:py-2 max-md:px-4 max-md:w-32'
       }
     >
       <p>{weatherData.description}</p>

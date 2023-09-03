@@ -92,7 +92,7 @@ export default function Home() {
   };
 
   const formatToday = () => {
-    const today = new Date().toISOString();
+    const today = data?.[0] ? data?.[0].date_time : '';
     const result = formatDay(today);
     return `${result.year}年${result.month}月${result.day}日(${result.dayOfWeekStr})`;
   };
@@ -125,7 +125,7 @@ export default function Home() {
       >
         <div
           className={
-            'container xl max-w-7xl rounded-xl bg-white/40 backdrop-blur-md px-5 py-20 max-md:py-10'
+            'container xl max-w-7xl rounded-xl bg-white/40 backdrop-blur-md px-5 py-20 max-md:py-10 max-md:px-3'
           }
         >
           <h1
@@ -147,8 +147,12 @@ export default function Home() {
                   value={inputCity}
                   onChange={handleChange}
                 />
-                <p className={getError ? 'block text-red-600' : 'hidden'}>
-                  入力された市区町村名が正しくないようです。
+                <p
+                  className={`${
+                    getError ? 'block text-red-600' : 'hidden'
+                  } ${'pt-1'} ${'max-md:text-sm'}`}
+                >
+                  {currentCity}の天気情報が見つまりませんでした。
                 </p>
               </div>
               <GetBtn onClick={getWeather} disabled={disabled} />
@@ -158,7 +162,7 @@ export default function Home() {
             {isLoading && (
               <div
                 className={
-                  'w-2/3 h-full absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4 backdrop-blur-md bg-white/30 rounded-xl z-10'
+                  'w-2/3 h-full absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4 backdrop-blur-md bg-white/30 rounded-xl z-10 max-md:w-full'
                 }
               >
                 <p
@@ -243,7 +247,7 @@ export default function Home() {
                   }
                 >
                   <div className={'max-md:overflow-auto'}>
-                    <ul className={'flex justify-between gap-4'}>
+                    <ul className={'flex justify-between gap-4 max-md:pb-4'}>
                       {timeWeather.map((weather: any, index: number) => (
                         <li
                           key={index}
@@ -267,7 +271,11 @@ export default function Home() {
                   }
                 >
                   <div className={'max-md:overflow-auto'}>
-                    <ul className={'flex justify-between gap-1 max-md:gap-x-4'}>
+                    <ul
+                      className={
+                        'flex justify-between gap-1 max-md:gap-x-4 max-md:pb-4'
+                      }
+                    >
                       {dayWeather.map((weather: any, index: number) => (
                         <li
                           key={index}
