@@ -33,6 +33,7 @@ export default function Home() {
   const [disabled, setDisabled] = useState(true);
   const [timeUpdatedAt, setTimeUpdatedAt] = useState('');
   const [dayUpdatedAt, setDayUpdatedAt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     inputCity.length > 0 ? setDisabled(false) : setDisabled(true);
@@ -44,6 +45,7 @@ export default function Home() {
       const hour = date.getHours();
       const minute = date.getMinutes();
       setTimeUpdatedAt(`${hour}時${String(minute).padStart(2, '0')}分`);
+      setIsLoading(false);
     }
   }, [data]);
 
@@ -62,6 +64,7 @@ export default function Home() {
   };
 
   const getWeather = async () => {
+    setIsLoading(true);
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/get_weather_data`,
@@ -150,117 +153,140 @@ export default function Home() {
               <GetBtn onClick={getWeather} disabled={disabled} />
             </div>
           </form>
-          {data?.[0] && (
-            <div className={'w-7/12 min-w-fit mt-7 mx-auto'}>
-              <p
-                className={
-                  'text-3xl font-bold text-gray-700 text-center max-md:text-lg'
-                }
-              >
-                {formatToday()}
-                <span>の</span>
-                {currentCity}の天気
-              </p>
-              {data?.[0].alert && (
-                <p className={'mt-7 text-xl'}>
-                  警報：{data?.[0].alert}
-                  <span className={'text-gray-800'}></span>
-                </p>
-              )}
-              <ul
-                className={
-                  'mt-5 flex justify-between text-xl gap-x-8 max-md:gap-x-2'
-                }
-              >
-                <li
-                  className={
-                    'max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
-                  }
-                >
-                  気温
-                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
-                    {data?.[0] && Math.round(data[0].temp)}℃
-                  </span>
-                </li>
-                <li
-                  className={
-                    'text-red-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
-                  }
-                >
-                  最高気温
-                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
-                    {data?.[0] && Math.round(data[0].temp_max)}℃
-                  </span>
-                </li>
-                <li
-                  className={
-                    'text-blue-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
-                  }
-                >
-                  最低気温
-                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
-                    {data?.[0] && Math.round(data[0].temp_min)}℃
-                  </span>
-                </li>
-                <li
-                  className={
-                    'text-orange-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
-                  }
-                >
-                  湿度
-                  <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
-                    {data?.[0] && Math.round(data[0].humidity)}%
-                  </span>
-                </li>
-              </ul>
-            </div>
-          )}
-          {data?.[0] && (
-            <>
+          <div className={'mt-7 mx-auto relative'}>
+            {isLoading && (
               <div
                 className={
-                  'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
+                  'w-2/3 h-full absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4 backdrop-blur-md bg-white/30 rounded-xl z-10'
                 }
               >
-                <div className={'max-md:overflow-auto'}>
-                  <ul className={'flex justify-between gap-4'}>
-                    {timeWeather.map((weather: any, index: number) => (
-                      <li key={index} className={'flex flex-col items-center'}>
-                        <p className={'text-gray-800 max-md:text-sm'}>
-                          {formatTime(weather.date_time)}
-                        </p>
-                        <DisplayTimesWeather weatherData={weather} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
-                  {timeUpdatedAt && `最終更新時間：${timeUpdatedAt}`}
+                <p
+                  className={
+                    'text-xl absolute top-2/4 left-2/4 transform -translate-x-2/4 -translate-y-2/4'
+                  }
+                >
+                  Now Loading...
                 </p>
               </div>
-              <div
-                className={
-                  'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
-                }
-              >
-                <div className={'max-md:overflow-auto'}>
-                  <ul className={'flex justify-between gap-1 max-md:gap-x-4'}>
-                    {dayWeather.map((weather: any, index: number) => (
-                      <li key={index} className={'flex flex-col items-center'}>
-                        <p className={'text-gray-800 max-md:text-sm'}>
-                          {formatDayOfWeek(weather.date_time)}
-                        </p>
-                        <DisplayDaysWeather weatherData={weather} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
-                  {dayUpdatedAt && `最終更新時間：${dayUpdatedAt}`}
+            )}
+            {data?.[0] && (
+              <div className={'w-7/12 min-w-fit mx-auto'}>
+                <p
+                  className={
+                    'text-3xl font-bold text-gray-700 text-center max-md:text-lg'
+                  }
+                >
+                  {formatToday()}
+                  <span>の</span>
+                  {currentCity}の天気
                 </p>
+                {data?.[0].alert && (
+                  <p className={'mt-7 text-xl'}>
+                    警報：{data?.[0].alert}
+                    <span className={'text-gray-800'}></span>
+                  </p>
+                )}
+                <ul
+                  className={
+                    'mt-5 flex justify-between text-xl gap-x-8 max-md:gap-x-2'
+                  }
+                >
+                  <li
+                    className={
+                      'max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                    }
+                  >
+                    気温
+                    <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                      {data?.[0] && Math.round(data[0].temp)}℃
+                    </span>
+                  </li>
+                  <li
+                    className={
+                      'text-red-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                    }
+                  >
+                    最高気温
+                    <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                      {data?.[0] && Math.round(data[0].temp_max)}℃
+                    </span>
+                  </li>
+                  <li
+                    className={
+                      'text-blue-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                    }
+                  >
+                    最低気温
+                    <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                      {data?.[0] && Math.round(data[0].temp_min)}℃
+                    </span>
+                  </li>
+                  <li
+                    className={
+                      'text-orange-600 max-md:flex max-md:flex-col max-md:items-center max-md:text-sm'
+                    }
+                  >
+                    湿度
+                    <span className={'ml-5 max-md:ml-0 max-md:text-base'}>
+                      {data?.[0] && Math.round(data[0].humidity)}%
+                    </span>
+                  </li>
+                </ul>
               </div>
-            </>
-          )}
+            )}
+            {data?.[0] && (
+              <>
+                <div
+                  className={
+                    'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
+                  }
+                >
+                  <div className={'max-md:overflow-auto'}>
+                    <ul className={'flex justify-between gap-4'}>
+                      {timeWeather.map((weather: any, index: number) => (
+                        <li
+                          key={index}
+                          className={'flex flex-col items-center'}
+                        >
+                          <p className={'text-gray-800 max-md:text-sm'}>
+                            {formatTime(weather.date_time)}
+                          </p>
+                          <DisplayTimesWeather weatherData={weather} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
+                    {timeUpdatedAt && `最終更新時間：${timeUpdatedAt}`}
+                  </p>
+                </div>
+                <div
+                  className={
+                    'w-7/12 min-w-fit mt-14 mx-auto max-md:min-w-0 max-md:w-full max-md:overflow-auto'
+                  }
+                >
+                  <div className={'max-md:overflow-auto'}>
+                    <ul className={'flex justify-between gap-1 max-md:gap-x-4'}>
+                      {dayWeather.map((weather: any, index: number) => (
+                        <li
+                          key={index}
+                          className={'flex flex-col items-center'}
+                        >
+                          <p className={'text-gray-800 max-md:text-sm'}>
+                            {formatDayOfWeek(weather.date_time)}
+                          </p>
+                          <DisplayDaysWeather weatherData={weather} />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <p className={'mt-2 text-right text-gray-600 max-md:text-sm'}>
+                    {dayUpdatedAt && `最終更新時間：${dayUpdatedAt}`}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
