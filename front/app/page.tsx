@@ -97,9 +97,13 @@ export default function Home() {
     }
   };
 
-  const dayIndex = () => {
-    today.setDate(today.getDate() + 1);
-    return `${today.getMonth() + 1}/${today.getDate()}`;
+  const formatDay = (timeStamp: string) => {
+    const date = new Date(timeStamp);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const dayOfWeek = date.getDay();
+    const dayOfWeekStr = ['日', '月', '火', '水', '木', '金', '土'][dayOfWeek];
+    return `${month}/${day}(${dayOfWeekStr})`;
   };
 
   return (
@@ -222,7 +226,9 @@ export default function Home() {
                 <ul className={'flex justify-between gap-1'}>
                   {dayWeather.map((weather: any, index: number) => (
                     <li key={index} className={'flex flex-col items-center'}>
-                      <p className={'text-gray-800'}>{dayIndex()}</p>
+                      <p className={'text-gray-800'}>
+                        {formatDay(weather.date_time)}
+                      </p>
                       <div
                         className={
                           'flex flex-col items-center rounded-lg backdrop-blur-sm py-4 px-4'
