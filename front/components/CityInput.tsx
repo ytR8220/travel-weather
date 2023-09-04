@@ -4,6 +4,8 @@ type props = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onCompositionStart: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  onCompositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
 };
 
 const CityInput: React.FC<props> = ({
@@ -12,6 +14,8 @@ const CityInput: React.FC<props> = ({
   value,
   onChange,
   onKeyDown,
+  onCompositionStart,
+  onCompositionEnd,
 }) => {
   return (
     <input
@@ -21,6 +25,8 @@ const CityInput: React.FC<props> = ({
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
+      onCompositionStart={onCompositionStart}
+      onCompositionEnd={onCompositionEnd}
       className={'w-full py-2 px-4 focus:outline-none rounded-md'}
       placeholder={'市区町村名を入力　例）新宿区'}
     />

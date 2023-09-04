@@ -25,6 +25,7 @@ type data = {
 
 export default function Home() {
   const [inputCity, setInputCity] = useState('');
+  const [isComposing, setIsComposing] = useState(false);
   const [currentCity, setCurrentCity] = useState('');
   const [errCity, setErrCity] = useState('');
   const [data, setData] = useState<data[] | null>(null);
@@ -111,15 +112,11 @@ export default function Home() {
     return `${result.month}/${result.day}(${result.dayOfWeekStr})`;
   };
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    getWeather();
-  };
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !isComposing) {
+      getWeather();
       inputRef.current?.blur();
     }
   };
@@ -146,7 +143,7 @@ export default function Home() {
           >
             Travel Weather
           </h1>
-          <form className={'w-full'} onSubmit={handleFormSubmit}>
+          <form className={'w-full'}>
             <div
               className={
                 'w-6/12 max-lg:w-full min-w-fit mx-auto mt-7 flex justify-center gap-5'
@@ -159,6 +156,8 @@ export default function Home() {
                   value={inputCity}
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
+                  onCompositionStart={() => setIsComposing(true)}
+                  onCompositionEnd={() => setIsComposing(false)}
                 />
                 <p
                   className={`${
