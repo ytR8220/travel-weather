@@ -116,7 +116,10 @@ module Api
           base_date + 4.days,
           base_date + 5.days
         ]
-        Weather.where(city_id:, data_type:).with_dates(days_to_check).distinct
+        subquery = Weather.latest_days(city_id, data_type, days_to_check)
+
+        Weather.joins("INNER JOIN (#{subquery.to_sql}) AS latest_records ON DATE(weathers.date_time) = latest_records.checked_date AND weathers.date_time = latest_records.max_date_time")
+               .where(city_id:, data_type:)
       end
 
       # 天気情報を保存する関数
