@@ -26,6 +26,7 @@ type data = {
 export default function Home() {
   const [inputCity, setInputCity] = useState('');
   const [currentCity, setCurrentCity] = useState('');
+  const [errCity, setErrCity] = useState('');
   const [data, setData] = useState<data[] | null>(null);
   const [timeWeather, setTimeWeather] = useState([]);
   const [dayWeather, setDayWeather] = useState([]);
@@ -74,10 +75,12 @@ export default function Home() {
       setTimeWeather(res?.data.slice(0, 4));
       setDayWeather(res?.data.slice(4));
       setData(res?.data);
+      setCurrentCity(inputCity);
     } catch (err) {
       setGetError(true);
+      setErrCity(inputCity);
+      setIsLoading(false);
     }
-    setCurrentCity(inputCity);
     setInputCity('');
   };
 
@@ -154,7 +157,7 @@ export default function Home() {
                     getError ? 'block text-red-600' : 'hidden'
                   } ${'pt-1'} ${'max-md:text-sm'}`}
                 >
-                  {currentCity}の天気情報が見つまりませんでした。
+                  {errCity || currentCity}の天気情報が見つまりませんでした。
                 </p>
               </div>
               <GetBtn onClick={getWeather} disabled={disabled} />
