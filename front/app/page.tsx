@@ -121,8 +121,6 @@ export default function Home() {
     }
   };
 
-  console.log(data);
-
   return (
     <div
       className={"bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat"}
