@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import CityInput from '@/components/CityInput';
 import GetBtn from '@/components/GetBtn';
@@ -116,6 +116,14 @@ export default function Home() {
     getWeather();
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      inputRef.current?.blur();
+    }
+  };
+
   return (
     <div
       className={"bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat"}
@@ -146,9 +154,11 @@ export default function Home() {
             >
               <div className={'w-3/4 max-md:w-full'}>
                 <CityInput
+                  inputRef={inputRef}
                   name={'city'}
                   value={inputCity}
                   onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                 />
                 <p
                   className={`${
