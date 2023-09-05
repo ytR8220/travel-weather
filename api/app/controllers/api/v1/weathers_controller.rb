@@ -22,23 +22,24 @@ module Api
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           client = HTTPClient.new
           response = client.get(url)
+          parsed_response = JSON.parse(response.body)
 
-          updated_existing_times_data = if existing_times_data.length < 4
-                                          Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [0, 3, 6, 12], type: :hourly,
-                                                                    city_id: city.id, saved_data: [])
-                                        end
+          success = true
+          saved_data = []
 
-          updated_existing_days_data = if existing_days_data.length < 5 || should_update_data
-                                         Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [1, 2, 3, 4, 5],
-                                                                   type: :daily, city_id: city.id, saved_data: [])
-                                       end
+          success = Weather.save_weather_data(parsed_response:, times: [0, 3, 6, 12], type: :hourly, city_id: city.id, saved_data:) if existing_times_data.length < 4
 
-          if updated_existing_times_data && updated_existing_days_data
-            Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
-            Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
+          if existing_days_data.length < 5 || should_update_data
+            success = Weather.save_weather_data(parsed_response:, times: [1, 2, 3, 4, 5], type: :daily, city_id: city.id,
+                                                saved_data:)
+          end
+
+          if success
+            updated_existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
+            updated_existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
             render json: updated_existing_times_data + updated_existing_days_data, status: :created
           else
-            render json: { error: 'データの取得に失敗しました。' }, status: :bad_gateway
+            render json: { error: 'データの取得に失敗しました。もう一度お試し下さい。' }, status: :bad_gateway
           end
         else
           render json: existing_times_data + existing_days_data, status: :ok
@@ -69,7 +70,7 @@ module Api
           coordinates = JSON.parse(response.body)
 
           if coordinates.empty? || coordinates[0]['lat'].nil? || coordinates[0]['lon'].nil?
-            render json: { error: 'データの取得に失敗しました。都市名が誤っている可能性があります。' }, status: :not_found
+            render json: { error: "#{city}の天気情報は見つまりませんでした。" }, status: :not_found
             return
           end
 
