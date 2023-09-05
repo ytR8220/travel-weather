@@ -27,7 +27,7 @@ export default function Home() {
   const [inputCity, setInputCity] = useState('');
   const [isComposing, setIsComposing] = useState(false);
   const [currentCity, setCurrentCity] = useState('');
-  const [errCity, setErrCity] = useState('');
+  const [errMessage, setErrMessage] = useState('');
   const [data, setData] = useState<data[] | null>(null);
   const [timeWeather, setTimeWeather] = useState([]);
   const [dayWeather, setDayWeather] = useState([]);
@@ -79,7 +79,7 @@ export default function Home() {
       setCurrentCity(inputCity);
     } catch (err) {
       setGetError(true);
-      setErrCity(inputCity);
+      setErrMessage(err.response.data.error);
       setIsLoading(false);
       setData(null);
     }
@@ -166,7 +166,7 @@ export default function Home() {
                     getError ? 'block text-red-600' : 'hidden'
                   } ${'pt-1'} ${'max-md:text-sm'}`}
                 >
-                  {errCity || currentCity}の天気情報が見つまりませんでした。
+                  {errMessage && errMessage}
                 </p>
               </div>
               <GetBtn onClick={getWeather} disabled={disabled} />
