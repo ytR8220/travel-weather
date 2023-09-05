@@ -12,8 +12,6 @@ class Weather < ApplicationRecord
   validates :icon, presence: true
   validates :data_type, presence: true
 
-  private
-
   # すでにデータがある場合はそれを取得する関数（現在、3時間後、6時間後、12時間後のデータ）
   def self.fetch_existing_times_data(city_id:, base_date:, data_type:)
     times_to_check = [
@@ -35,9 +33,9 @@ class Weather < ApplicationRecord
       base_date + 5.days
     ]
     subquery = select('DATE(date_time) as checked_date, MAX(date_time) as max_date_time')
-                .where(city_id:, data_type:)
-                .where('DATE(date_time) IN (?)', days_to_check.map(&:to_date))
-                .group('DATE(date_time)')
+               .where(city_id:, data_type:)
+               .where('DATE(date_time) IN (?)', days_to_check.map(&:to_date))
+               .group('DATE(date_time)')
 
     Weather.joins("INNER JOIN (#{subquery.to_sql}) AS latest_records ON DATE(weathers.date_time) = latest_records.checked_date AND weathers.date_time = latest_records.max_date_time")
            .where(city_id:, data_type:)
@@ -79,6 +77,7 @@ class Weather < ApplicationRecord
       weather_data.assign_attributes(attributes)
 
       return false unless weather_data.save
+
       saved_data << weather_data
     end
     saved_data

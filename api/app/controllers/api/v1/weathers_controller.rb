@@ -13,23 +13,29 @@ module Api
 
         city = City.find_or_create_by_name_and_coordinates(name: city_name, lat: @lat, lon: @lon, country_name: @country)
 
-        existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date: base_date, data_type: :hourly)
-        existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date: base_date, data_type: :daily)
+        existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
+        existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
         should_update_data = existing_days_data.any? && (Time.now.utc - existing_days_data[0].updated_at) / 3600 > 12
 
         if should_update_data || existing_times_data.length < 4 || existing_days_data.length < 5
-          
+
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           client = HTTPClient.new
           response = client.get(url)
-          
-          updated_existing_times_data = existing_times_data.length < 4 ?  Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [0, 3, 6, 12], type: :hourly, city_id: city.id, saved_data: []) : nil
-          
-          updated_existing_days_data = existing_days_data.length < 5 || should_update_data ? Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [1, 2, 3, 4, 5], type: :daily, city_id: city.id, saved_data: []) : nil
+
+          updated_existing_times_data = if existing_times_data.length < 4
+                                          Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [0, 3, 6, 12], type: :hourly,
+                                                                    city_id: city.id, saved_data: [])
+                                        end
+
+          updated_existing_days_data = if existing_days_data.length < 5 || should_update_data
+                                         Weather.save_weather_data(parsed_response: JSON.parse(response.body), times: [1, 2, 3, 4, 5],
+                                                                   type: :daily, city_id: city.id, saved_data: [])
+                                       end
 
           if updated_existing_times_data && updated_existing_days_data
-            Weather.fetch_existing_times_data(city_id: city.id, base_date: base_date, data_type: :hourly)
-            Weather.fetch_existing_days_data(city_id: city.id, base_date: base_date, data_type: :daily)
+            Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
+            Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
             render json: updated_existing_times_data + updated_existing_days_data, status: :created
           else
             render json: { error: 'データの取得に失敗しました。' }, status: :bad_gateway
@@ -74,7 +80,6 @@ module Api
           render json: { error: e.message.to_s }, status: :bad_gateway
         end
       end
-
     end
   end
 end
