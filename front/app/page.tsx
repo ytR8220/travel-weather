@@ -77,7 +77,7 @@ export default function Home() {
       setDayWeather(res?.data.slice(4));
       setData(res?.data);
       setCurrentCity(inputCity);
-    } catch (err) {
+    } catch (err: any) {
       setGetError(true);
       setErrMessage(err.response.data.error);
       setIsLoading(false);
