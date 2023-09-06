@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd api
-          bundle _2.4.14 install
+          bundle _2.4.14_ install
 
       - name: Run tests
         run: |
