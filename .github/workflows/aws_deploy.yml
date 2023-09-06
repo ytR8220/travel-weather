@@ -38,7 +38,7 @@ jobs:
         run: |
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
           echo "${{ secrets.TRAVEL_WEATHER_PRIVATE_KEY }}" > private_key
-          echo private_key
+          cat private_key
           chmod 600 private_key
           ssh -vvv -oStrictHostKeyChecking=no ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} -i private_key "cd ~/var/www/travel-weather && git pull && sudo systemctl restart nginx && sudo systemctl restart unicorn"
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
