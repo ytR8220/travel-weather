@@ -73,13 +73,13 @@ export default function Home() {
         `${process.env.NEXT_PUBLIC_API_URL}/get_weather_data`,
         { city: inputCity },
       );
-      setTimeWeather(res?.data.slice(0, 4));
-      setDayWeather(res?.data.slice(4));
-      setData(res?.data);
-      setCurrentCity(inputCity);
+      setTimeWeather(res?.data.weather_data.slice(0, 4));
+      setDayWeather(res?.data.weather_data.slice(4));
+      setData(res?.data.weather_data);
+      setCurrentCity(res?.data.city_name);
     } catch (err: any) {
       setGetError(true);
-      setErrMessage(err.response.data.error);
+      setErrMessage(err.response.data.weather_data.error);
       setIsLoading(false);
       setData(null);
     }
@@ -122,6 +122,8 @@ export default function Home() {
       inputRef.current?.blur();
     }
   };
+
+  console.log(data);
 
   return (
     <div
