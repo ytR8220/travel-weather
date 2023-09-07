@@ -44,42 +44,35 @@ class Weather < ApplicationRecord
   # 天気情報を保存する関数
   def self.save_weather_data(parsed_response:, times:, type:, city_id:, saved_data:)
     times.each do |time|
-      if type == :hourly
-        date_time = Time.at(parsed_response.dig('hourly', time, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
-        weather_data = Weather.find_or_initialize_by(city_id:, date_time:, data_type: type)
-        attributes = {
-          weather: parsed_response.dig('hourly', time, 'weather', 0, 'main'),
-          temp: parsed_response.dig('hourly', time, 'temp'),
-          temp_max: parsed_response.dig('daily', 0, 'temp', 'max'),
-          temp_min: parsed_response.dig('daily', 0, 'temp', 'min'),
-          humidity: parsed_response.dig('daily', 0, 'humidity'),
-          description: parsed_response.dig('hourly', time, 'weather', 0, 'description'),
-          alert: parsed_response.dig('alerts', 0, 'description'),
-          icon: parsed_response.dig('hourly', time, 'weather', 0, 'icon'),
-          data_type: type
-        }
-      elsif type == :daily
-        date_time = Time.at(parsed_response.dig('daily', time, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
-        weather_data = Weather.find_or_initialize_by(city_id:, date_time:, data_type: type)
-        attributes = {
-          weather: parsed_response.dig('daily', time, 'weather', 0, 'main'),
-          temp: parsed_response.dig('daily', time, 'temp', 'day'),
-          temp_max: parsed_response.dig('daily', time, 'temp', 'max'),
-          temp_min: parsed_response.dig('daily', time, 'temp', 'min'),
-          humidity: parsed_response.dig('daily', time, 'humidity'),
-          description: parsed_response.dig('daily', time, 'weather', 0, 'description'),
-          alert: parsed_response.dig('alerts', 0, 'description'),
-          icon: parsed_response.dig('daily', time, 'weather', 0, 'icon'),
-          data_type: type
-        }
-      end
-
+      data_type = (type == :hourly ? 'hourly' : 'daily')
+      date_time = Time.at(parsed_response.dig(data_type, time, 'dt')).strftime('%Y-%m-%d %H:%M:%S')
+      weather_data = Weather.find_or_initialize_by(city_id:, date_time:, data_type:)
+      attributes = Weather.set_attributes(parsed_response:, time:, data_type:)
       weather_data.assign_attributes(attributes)
-
       return false unless weather_data.save
 
       saved_data << weather_data
     end
     saved_data
+  end
+
+  # 保存する天気情報の属性を設定する関数
+  def self.set_attributes(parsed_response:, time:, data_type:)
+    temp_value = if data_type == 'hourly'
+                   parsed_response.dig(data_type, time, 'temp')
+                 else
+                   parsed_response.dig(data_type, time, 'temp', 'day')
+                 end
+    {
+      weather: parsed_response.dig(data_type, time, 'weather', 0, 'main'),
+      temp: temp_value,
+      temp_max: parsed_response.dig('daily', data_type == 'hourly' ? 0 : time, 'temp', 'max'),
+      temp_min: parsed_response.dig('daily', data_type == 'hourly' ? 0 : time, 'temp', 'min'),
+      humidity: parsed_response.dig('daily', data_type == 'hourly' ? 0 : time, 'humidity'),
+      description: parsed_response.dig(data_type, time, 'weather', 0, 'description'),
+      alert: parsed_response.dig('alerts', 0, 'description'),
+      icon: parsed_response.dig(data_type, time, 'weather', 0, 'icon'),
+      data_type:
+    }
   end
 end

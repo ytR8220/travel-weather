@@ -4,19 +4,13 @@ module Api
   module V1
     # 天気情報を取得するコントローラー
     class WeathersController < ApplicationController
-      before_action :set_api_key, :set_client, :get_coordinates
+      before_action :set_api_key, :get_date_time, :set_client, :get_coordinates
 
       # 天気情報を取得する関数
       def get_weather_data
-        base_date = DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00'))
-
         city = City.find_or_create_by_name_and_coordinates(name: @city_name, lat: @lat, lon: @lon, country_name: @country)
 
-        existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
-        existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
-        should_update_data = existing_days_data.any? && (Time.now.utc - existing_days_data[0].updated_at) / 3600 > 12
-
-        if should_update_data || existing_times_data.length < 4 || existing_days_data.length < 5
+        if check_weather_data(city)
 
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
           response = @client.get(url)
@@ -25,16 +19,13 @@ module Api
           success = true
           saved_data = []
 
-          success = Weather.save_weather_data(parsed_response:, times: [0, 3, 6, 12], type: :hourly, city_id: city.id, saved_data:) if existing_times_data.length < 4
+          success = Weather.save_weather_data(parsed_response:, times: [0, 3, 6, 12], type: :hourly, city_id: city.id, saved_data:) if @existing_times_data.length < 4
 
-          if existing_days_data.length < 5 || should_update_data
-            success = Weather.save_weather_data(parsed_response:, times: [1, 2, 3, 4, 5], type: :daily, city_id: city.id,
-                                                saved_data:)
-          end
+          success = Weather.save_weather_data(parsed_response:, times: [1, 2, 3, 4, 5], type: :daily, city_id: city.id, saved_data:) if @existing_days_data.length < 5 || @should_update_data
 
           if success
-            updated_existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
-            updated_existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
+            updated_existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date: @base_date, data_type: :hourly)
+            updated_existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date: @base_date, data_type: :daily)
             render json: {
               city_name: @city_name,
               weather_data: updated_existing_times_data + updated_existing_days_data
@@ -44,8 +35,8 @@ module Api
           end
         else
           render json: {
-            city_name: @city_name,  
-            weather_data: existing_times_data + existing_days_data
+            city_name: @city_name,
+            weather_data: @existing_times_data + @existing_days_data
           }, status: :ok
         end
       end
@@ -54,6 +45,10 @@ module Api
 
       def set_api_key
         @api_key = ENV['WEATHER_API']
+      end
+
+      def get_date_time
+        @base_date = DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00'))
       end
 
       def set_client
@@ -88,6 +83,15 @@ module Api
         rescue HTTPClient::BadResponseError, HTTPClient::TimeoutError, JSON::ParserError => e
           render json: { error: e.message.to_s }, status: :bad_gateway
         end
+      end
+
+      # すでにデータがあるかどうかを確認する関数
+      def check_weather_data(city)
+        @existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date: @base_date, data_type: :hourly)
+        @existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date: @base_date, data_type: :daily)
+        @should_update_data = @existing_days_data.any? && (Time.now.utc - @existing_days_data[0].updated_at) / 3600 > 12
+
+        @should_update_data || @existing_times_data.length < 4 || @existing_days_data.length < 5
       end
     end
   end
