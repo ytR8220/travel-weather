@@ -79,7 +79,7 @@ export default function Home() {
       setCurrentCity(res?.data.city_name);
     } catch (err: any) {
       setGetError(true);
-      setErrMessage(err.response.data.weather_data.error);
+      setErrMessage(err.response.data?.error);
       setIsLoading(false);
       setData(null);
     }
@@ -122,8 +122,6 @@ export default function Home() {
       inputRef.current?.blur();
     }
   };
-
-  console.log(data);
 
   return (
     <div
