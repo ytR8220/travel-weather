@@ -70,7 +70,7 @@ module Api
           coordinates = JSON.parse(response.body)
 
           if coordinates.empty? || coordinates[0]['lat'].nil? || coordinates[0]['lon'].nil?
-            render json: { error: "#{city}の天気情報は見つまりませんでした。" }, status: :not_found
+            render json: { error: "#{city}の天気情報は見つかりませんでした。" }, status: :not_found
             return
           end
 
