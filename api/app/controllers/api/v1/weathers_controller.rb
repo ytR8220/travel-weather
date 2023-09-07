@@ -4,7 +4,7 @@ module Api
   module V1
     # 天気情報を取得するコントローラー
     class WeathersController < ApplicationController
-      before_action :set_api_key, :get_coordinates
+      before_action :set_api_key, :set_client, :get_coordinates
 
       # 天気情報を取得する関数
       def get_weather_data
@@ -20,8 +20,7 @@ module Api
         if should_update_data || existing_times_data.length < 4 || existing_days_data.length < 5
 
           url = "https://api.openweathermap.org/data/3.0/onecall?lat=#{@lat}&lon=#{@lon}&exclude=minutely&appid=#{@api_key}&units=metric&lang=ja"
-          client = HTTPClient.new
-          response = client.get(url)
+          response = @client.get(url)
           parsed_response = JSON.parse(response.body)
 
           success = true
@@ -52,15 +51,18 @@ module Api
         @api_key = ENV['WEATHER_API']
       end
 
+      def set_client
+        @client = HTTPClient.new
+      end
+
       # 経度緯度を取得する関数
       def get_coordinates
         city = params[:city]
         encode_city = URI.encode_www_form_component(city)
         url = "http://api.openweathermap.org/geo/1.0/direct?q=#{encode_city},&appid=#{@api_key}"
-        client = HTTPClient.new
 
         begin
-          response = client.get(url)
+          response = @client.get(url)
 
           unless response.status == 200
             render json: { error: "APIエラー:#{response.status}" }, status: :bad_gateway
