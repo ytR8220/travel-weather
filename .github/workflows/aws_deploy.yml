@@ -35,9 +35,13 @@ jobs:
           aws-region: ap-northeast-1
 
       - name: Deploy
+        env:
+          PRIVATE_KEY: ${{ secrets.TRAVEL_WEATHER_PRIVATE_KEY }}
+          HOST_NAME: ${{ secrets.EC2_HOST_NAME }}
+          USER_NAME: ${{ secrets.EC2_USER_NAME }}
         run: |
           aws ec2 authorize-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
-          echo "${{ secrets.TRAVEL_WEATHER_PRIVATE_KEY }}" > private_key
+          echo "$PRIVATE_KEY" > private_key
           chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.EC2_USER_NAME }}@${{ secrets.EC2_HOST_NAME }} "cd ~/var/www/travel-weather && git pull && sudo systemctl restart nginx && sudo systemctl restart unicorn"
+          ssh -o StrictHostKeyChecking=no -i private_key ${ USER_NAME }@${ HOST_NAME } "cd ~/var/www/travel-weather && git pull && sudo systemctl restart nginx && sudo systemctl restart unicorn"
           aws ec2 revoke-security-group-ingress --group-id ${{ secrets.EC2_SECURITY_GROUP_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
