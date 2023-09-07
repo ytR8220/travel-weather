@@ -8,10 +8,9 @@ module Api
 
       # 天気情報を取得する関数
       def get_weather_data
-        city_name = params[:city]
         base_date = DateTime.parse(Time.now.strftime('%Y-%m-%d %H:00:00'))
 
-        city = City.find_or_create_by_name_and_coordinates(name: city_name, lat: @lat, lon: @lon, country_name: @country)
+        city = City.find_or_create_by_name_and_coordinates(name: @city_name, lat: @lat, lon: @lon, country_name: @country)
 
         existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
         existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
@@ -36,12 +35,18 @@ module Api
           if success
             updated_existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date:, data_type: :hourly)
             updated_existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date:, data_type: :daily)
-            render json: updated_existing_times_data + updated_existing_days_data, status: :created
+            render json: {
+              city_name: @city_name,
+              weather_data: updated_existing_times_data + updated_existing_days_data
+            }, status: :created
           else
             render json: { error: 'データの取得に失敗しました。もう一度お試し下さい。' }, status: :bad_gateway
           end
         else
-          render json: existing_times_data + existing_days_data, status: :ok
+          render json: {
+            city_name: @city_name,  
+            weather_data: existing_times_data + existing_days_data
+          }, status: :ok
         end
       end
 
@@ -79,6 +84,7 @@ module Api
           @lat = coordinates[0]['lat']
           @lon = coordinates[0]['lon']
           @country = coordinates[0]['country']
+          @city_name = coordinates[0]['local_names']['ja']
         rescue HTTPClient::BadResponseError, HTTPClient::TimeoutError, JSON::ParserError => e
           render json: { error: e.message.to_s }, status: :bad_gateway
         end
