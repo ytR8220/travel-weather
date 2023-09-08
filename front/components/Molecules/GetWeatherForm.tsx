@@ -1,15 +1,17 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useRef } from 'react';
-import { inputCityState } from '@/lib/atoms/inputCityState';
-import { getErrorState } from '@/lib/atoms/getErrorState';
-import { composingState } from '@/lib/atoms/composingState';
-import { disabledState } from '@/lib/atoms/disabledState';
-import { errorMessageState } from '@/lib/atoms/errorMessageState';
-import { isLoadingState } from '@/lib/atoms/isLoadingState';
-import { timeWeatherState } from '@/lib/atoms/timeWeatherState';
-import { dayWeatherState } from '@/lib/atoms/dayWeatherState';
-import { weatherDataState } from '@/lib/atoms/weatherDataState';
-import { currentCityStat } from '@/lib/atoms/currentCityState';
+import {
+  inputCityState,
+  composingState,
+  getErrorState,
+  errorMessageState,
+  isLoadingState,
+  timeWeatherState,
+  dayWeatherState,
+  weatherDataState,
+  currentCityStat,
+  disabledState,
+} from '@/lib/globalState';
 import axios from 'axios';
 import CityInput from '../Atoms/CityInput';
 import GetBtn from '../Atoms/GetBtn';

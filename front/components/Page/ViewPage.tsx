@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react';
 import DisplayTimesWeather from '@/components/DisplayTimesWeather';
 import DisplayDaysWeather from '@/components/DisplayDaysWeather';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { inputCityState } from '@/lib/atoms/inputCityState';
-import { weatherDataState } from '@/lib/atoms/weatherDataState';
-import { currentCityStat } from '@/lib/atoms/currentCityState';
-import { disabledState } from '@/lib/atoms/disabledState';
-import { timeWeatherState } from '@/lib/atoms/timeWeatherState';
-import { dayWeatherState } from '@/lib/atoms/dayWeatherState';
-import { isLoadingState } from '@/lib/atoms/isLoadingState';
+import {
+  inputCityState,
+  weatherDataState,
+  currentCityStat,
+  disabledState,
+  timeWeatherState,
+  dayWeatherState,
+  isLoadingState,
+} from '@/lib/globalState';
 import GetWeatherForm from '../Molecules/GetWeatherForm';
 
 type data = {
