@@ -16,7 +16,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang='ja'>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div
+          className={"bg-[url('/bg.jpg')] bg-cover bg-center bg-no-repeat"}
+          style={{ backgroundPositionY: '40%' }}
+        >
+          <div
+            className={
+              'p-10 min-h-screen h-full flex justify-center items-center max-md:p-5'
+            }
+          >
+            <div
+              className={
+                'container xl max-w-7xl rounded-xl bg-white/40 backdrop-blur-md px-5 py-20 max-md:py-10 max-md:px-3'
+              }
+            >
+              {children}
+            </div>
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
