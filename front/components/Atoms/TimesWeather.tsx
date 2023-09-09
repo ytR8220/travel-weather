@@ -8,7 +8,7 @@ type props = {
   };
 };
 
-const DisplayTimesWeather: React.FC<props> = ({ weatherData }) => {
+const TimesWeather: React.FC<props> = ({ weatherData }) => {
   return (
     <div
       className={
@@ -30,4 +30,4 @@ const DisplayTimesWeather: React.FC<props> = ({ weatherData }) => {
   );
 };
 
-export default DisplayTimesWeather;
+export default TimesWeather;

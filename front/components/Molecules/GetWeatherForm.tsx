@@ -1,5 +1,5 @@
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { useRef } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useEffect, useRef } from 'react';
 import {
   inputCityState,
   composingState,
@@ -26,9 +26,12 @@ const GetWeatherForm = () => {
   const setData = useSetRecoilState(weatherDataState);
   const setCurrentCity = useSetRecoilState(currentCityStat);
   const [errMessage, setErrMessage] = useRecoilState(errorMessageState);
-  const disabled = useRecoilValue(disabledState);
-
+  const [disabled, setDisabled] = useRecoilState(disabledState);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputCity.length > 0 ? setDisabled(false) : setDisabled(true);
+  }, [inputCity, setDisabled]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGetError(false);
