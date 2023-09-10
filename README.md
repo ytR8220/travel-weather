@@ -12,7 +12,7 @@
 ---
 
 <h3>【URL】<a href="https://www.yto-weather.com" target="_blank" rel="noopener">Travel Weather</a></h3>
-<p></p>
+<p>Google Chrome、Safari、Firefox、Edgeにて動作確認済み。（2023年9月11日時点、全て最新Ver.）</p>
 
 ---
 
