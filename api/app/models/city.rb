@@ -36,5 +36,4 @@ class City < ApplicationRecord
   #     return coordinates
   #   end
   # end
-
 end
