@@ -58,7 +58,8 @@ module Api
 
           coordinates = JSON.parse(response.body)
           if coordinates.empty? || coordinates[0]['lat'].nil? || coordinates[0]['lon'].nil? || coordinates[0]['local_names'].nil? || coordinates[0]['local_names']['ja'].nil?
-            render json: { error: "#{city}の天気情報は見つかりませんでした。" }, status: :not_found
+            # coordinates = City.try_coordinates(city, @api_key)
+            render json: { error: "「#{city}」の天気情報は見つかりませんでした。" }, status: :not_found
             return
           end
 
