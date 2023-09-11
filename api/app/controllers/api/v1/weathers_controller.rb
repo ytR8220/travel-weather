@@ -89,7 +89,12 @@ module Api
 
           hourly_success = @existing_times_data.length < 4 ? Weather.save_weather_data(parsed_response:, times: [0, 3, 6, 12], type: :hourly, city_id: city.id, saved_data:) : true
 
-          daily_success =  @should_update_data || @existing_days_data.length < 5 ? daily_success = Weather.save_weather_data(parsed_response:, times: [1, 2, 3, 4, 5], type: :daily, city_id: city.id, saved_data:) : true
+          daily_success =  if @should_update_data || @existing_days_data.length < 5
+                             daily_success = Weather.save_weather_data(parsed_response:, times: [1, 2, 3, 4, 5], type: :daily,
+                                                                       city_id: city.id, saved_data:)
+                           else
+                             true
+                           end
 
           hourly_success && daily_success
         rescue JSON::ParserError => e
@@ -99,7 +104,6 @@ module Api
 
       # 天気情報を更新する関数
       def update_weather_data(city)
-      
         updated_existing_times_data = Weather.fetch_existing_times_data(city_id: city.id, base_date: @base_date, data_type: :hourly)
         updated_existing_days_data = Weather.fetch_existing_days_data(city_id: city.id, base_date: @base_date, data_type: :daily)
         render json: {
