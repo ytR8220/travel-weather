@@ -1,5 +1,5 @@
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   inputCityState,
   composingState,
@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import CityInput from '../Atoms/CityInput';
 import GetBtn from '../Atoms/GetBtn';
+import IfCity from '../Atoms/IfCity';
 
 const GetWeatherForm = () => {
   const [inputCity, setInputCity] = useRecoilState(inputCityState);
@@ -27,6 +28,7 @@ const GetWeatherForm = () => {
   const setCurrentCity = useSetRecoilState(currentCityStat);
   const [errMessage, setErrMessage] = useRecoilState(errorMessageState);
   const [disabled, setDisabled] = useRecoilState(disabledState);
+  const [searchCity, setSearchCity] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -55,6 +57,7 @@ const GetWeatherForm = () => {
       setIsLoading(false);
       setData(null);
     }
+    setSearchCity(inputCity);
     setInputCity('');
   };
 
@@ -89,6 +92,7 @@ const GetWeatherForm = () => {
           >
             {errMessage && errMessage}
           </p>
+          <IfCity cityName={searchCity} />
         </div>
         <GetBtn onClick={getWeather} disabled={disabled} />
       </div>
